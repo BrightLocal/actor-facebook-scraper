@@ -520,15 +520,15 @@ export const pageSelectors = {
             const title = joinInnerText('[data-nt="FB:TEXT4"]').join('\n') || null;
             const text = joinInnerText('[data-gt]').join('\n') || null;
             const attributes = joinInnerText('[data-nt="FB:EXPANDABLE_TEXT"]').map((s) => s.split('・')).flat();
+            const url = container?.querySelector<HTMLAnchorElement>('a[aria-label]')?.href ?? null;
             const gradeText =  joinInnerText('[data-nt="FB:TEXT4"]');
             let grade = null;
-            if (gradeText.indexOf('doesn\'t recommend')){
+            if (gradeText[0].indexOf('doesn\'t recommend') > 0){
                 grade = 'negative'
-            } else if (gradeText.indexOf('recommends')){
+            } else if (gradeText[0].indexOf('recommends') > 0){
                 grade = 'positive'
             }
-            const url = container?.querySelector<HTMLAnchorElement>('a[aria-label]')?.href ?? null;
-
+            const type = grade ? 'recommendation' : 'review'
             return {
                 title,
                 text,
@@ -536,7 +536,7 @@ export const pageSelectors = {
                 url,
                 date: parse.time,
                 grade: grade,
-                type: gradeText,
+                type: type,
                 star_rating: gradeText.length
             };
         })).map((s): FbReview => ({ ...s, canonical: null, date: convertDate(s.date, true), grade: s.grade, type: s.type, star_rating: s.star_rating }));
