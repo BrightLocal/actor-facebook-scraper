@@ -528,8 +528,10 @@ export const pageSelectors = {
                 attributes,
                 url,
                 date: parse.time,
+                grade: 'positive',
+                type: 'recommendation',
             };
-        })).map((s): FbReview => ({ ...s, canonical: null, date: convertDate(s.date, true) }));
+        })).map((s): FbReview => ({ ...s, canonical: null, date: convertDate(s.date, true), grade: s.grade, type: s.type }));
     }),
     latLng: createPageSelector('[style*="static_map.php"]', 'latLng', async (els) => {
         if (!els.length) {

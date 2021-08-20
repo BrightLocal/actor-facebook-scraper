@@ -153,6 +153,9 @@ export interface FbReview {
     attributes: string[];
     url: string | null;
     canonical: string | null;
+    grade: string | null;
+    type: string | null;
+    star_rating: number | null;
 }
 
 export interface FbImage {
