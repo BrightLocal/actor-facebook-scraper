@@ -517,9 +517,21 @@ export const pageSelectors = {
                 return s.innerText;
             });
 
-            const title = joinInnerText('[data-nt="FB:TEXT4"]').join('\n') || null;
+            const title = joinInnerText('[data-nt="FB:TEXT4"]').join(' ') || null;
             const author = title.split('recommends')[0];
-            const text = joinInnerText('[data-gt]').join('\n') || null;
+            let text_nodes = container?.querySelector('[data-gt]');
+            let title2: string = '';
+            if (text_nodes) {
+                let more_node = text_nodes.querySelector('.text_exposed_hide');
+                title2 = text_nodes.textContent ?? '';
+                if (more_node) {
+                    text_nodes.removeChild(more_node);
+                    title2 = text_nodes.textContent ?? '';
+                    title2 = title2 + text_nodes.querySelector('.text_exposed_show')?.textContent
+                }
+
+            }
+            const text = joinInnerText('[data-gt]').join(' ') || null;
             const attributes = joinInnerText('[data-nt="FB:EXPANDABLE_TEXT"]').map((s) => s.split('・')).flat();
             const url = container?.querySelector<HTMLAnchorElement>('a[aria-label]')?.href ?? null;
             const gradeText = joinInnerText('[data-nt="FB:TEXT4"]');
@@ -531,7 +543,7 @@ export const pageSelectors = {
             }
             const type = grade ? 'recommendation' : 'review'
             return {
-                title,
+                title2,
                 text,
                 attributes,
                 url,
@@ -541,7 +553,13 @@ export const pageSelectors = {
                 star_rating: gradeText.length,
                 author: author
             };
-        })).map((s): FbReview => ({ ...s, canonical: null, date: convertDate(s.date, true), grade: s.grade, type: s.type, star_rating: s.star_rating, author: s.author}));
+        })).map((s): FbReview => ({ ...s, canonical: null, date: convertDate(s.date, true),
+            grade: s.grade,
+            type: s.type,
+            star_rating: s.star_rating,
+            author: s.author,
+            html: s.container
+        }));
     }),
     latLng: createPageSelector('[style*="static_map.php"]', 'latLng', async (els) => {
         if (!els.length) {
