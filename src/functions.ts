@@ -520,18 +520,19 @@ export const pageSelectors = {
             const title = joinInnerText('[data-nt="FB:TEXT4"]').join(' ') || null;
             const author = title.split('recommends')[0];
             let text_nodes = container?.querySelector('[data-gt]');
-            let title2: string = '';
+            let text: string = '';
             if (text_nodes) {
                 let more_node = text_nodes.querySelector('.text_exposed_hide');
-                title2 = text_nodes.textContent ?? '';
+                text = text_nodes.textContent ?? '';
                 if (more_node) {
                     text_nodes.removeChild(more_node);
-                    title2 = text_nodes.textContent ?? '';
-                    title2 = title2 + text_nodes.querySelector('.text_exposed_show')?.textContent
+                    text = text_nodes.textContent ?? '';
+                    let more_text = text_nodes.querySelector('.text_exposed_show')?.textContent ?? '';
+                    text = text + more_text.replace('/( More)$/', "");
                 }
 
             }
-            const text = joinInnerText('[data-gt]').join(' ') || null;
+            //const text = joinInnerText('[data-gt]').join(' ') || null;
             const attributes = joinInnerText('[data-nt="FB:EXPANDABLE_TEXT"]').map((s) => s.split('・')).flat();
             const url = container?.querySelector<HTMLAnchorElement>('a[aria-label]')?.href ?? null;
             const gradeText = joinInnerText('[data-nt="FB:TEXT4"]');
@@ -543,21 +544,19 @@ export const pageSelectors = {
             }
             const type = grade ? 'recommendation' : 'review'
             return {
-                title2,
+                title,
                 text,
                 attributes,
                 url,
                 date: parse.time,
                 grade: grade,
                 type: type,
-                star_rating: gradeText.length,
-                author: author
+                star_rating: null,
+                author: author.trim()
             };
         })).map((s): FbReview => ({ ...s, canonical: null, date: convertDate(s.date, true),
             grade: s.grade,
             type: s.type,
-            star_rating: s.star_rating,
-            author: s.author,
             html: s.container
         }));
     }),
