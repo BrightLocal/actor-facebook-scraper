@@ -518,10 +518,11 @@ export const pageSelectors = {
             });
 
             const title = joinInnerText('[data-nt="FB:TEXT4"]').join('\n') || null;
+            const author = title.split('recommends')[0];
             const text = joinInnerText('[data-gt]').join('\n') || null;
             const attributes = joinInnerText('[data-nt="FB:EXPANDABLE_TEXT"]').map((s) => s.split('・')).flat();
             const url = container?.querySelector<HTMLAnchorElement>('a[aria-label]')?.href ?? null;
-            const gradeText =  joinInnerText('[data-nt="FB:TEXT4"]');
+            const gradeText = joinInnerText('[data-nt="FB:TEXT4"]');
             let grade = null;
             if (gradeText[0].indexOf('doesn\'t recommend') > 0){
                 grade = 'negative'
@@ -537,9 +538,10 @@ export const pageSelectors = {
                 date: parse.time,
                 grade: grade,
                 type: type,
-                star_rating: gradeText.length
+                star_rating: gradeText.length,
+                author: author
             };
-        })).map((s): FbReview => ({ ...s, canonical: null, date: convertDate(s.date, true), grade: s.grade, type: s.type, star_rating: s.star_rating }));
+        })).map((s): FbReview => ({ ...s, canonical: null, date: convertDate(s.date, true), grade: s.grade, type: s.type, star_rating: s.star_rating, author: s.author}));
     }),
     latLng: createPageSelector('[style*="static_map.php"]', 'latLng', async (els) => {
         if (!els.length) {

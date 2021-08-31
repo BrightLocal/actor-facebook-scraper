@@ -156,6 +156,7 @@ export interface FbReview {
     grade: string | null;
     type: string | null;
     star_rating: number | null;
+    author: string | null;
 }
 
 export interface FbImage {
